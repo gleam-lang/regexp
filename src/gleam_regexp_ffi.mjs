@@ -4,6 +4,7 @@ import {
   Match as RegexMatch,
 } from "./gleam/regexp.mjs";
 import { Some, None } from "../gleam_stdlib/gleam/option.mjs";
+import * as $string from "../gleam_stdlib/gleam/string.mjs";
 
 export function check(regex, string) {
   regex.lastIndex = 0;
@@ -48,4 +49,15 @@ export function scan(regex, string) {
 
 export function replace(regex, original_string, replacement) {
   return original_string.replaceAll(regex, replacement);
+}
+
+export function replace_match(regex, original_string, replacement) {
+  let replace = (match, ...args) => {
+    const hasNamedGroups = typeof args.at(-1) === "object";
+    const groups = args.slice(0, hasNamedGroups ? -3 : -2);
+    const submatches = groups.map($string.to_option);
+    let regexMatch = new RegexMatch(match, List.fromArray(submatches));
+    return replacement(regexMatch);
+  };
+  return original_string.replaceAll(regex, replace);
 }
