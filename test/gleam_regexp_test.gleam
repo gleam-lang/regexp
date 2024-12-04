@@ -1,5 +1,6 @@
 import gleam/option.{None, Some}
 import gleam/regexp.{type Match, Match, Options}
+import gleam/string
 import gleeunit
 import gleeunit/should
 
@@ -191,21 +192,21 @@ pub fn replace_3_test() {
   |> should.equal("🐕🐕 are great!")
 }
 
-pub fn replace_match_test() {
+pub fn replace_map_0_test() {
   let replace = fn(match: Match) {
-    case match {
-      Match("1", _) -> "one"
-      Match("2", _) -> "two"
-      Match("3", _) -> "three"
-      Match(n, _) -> n
+    case match.content {
+      "1" -> "one"
+      "2" -> "two"
+      "3" -> "three"
+      n -> n
     }
   }
   let assert Ok(re) = regexp.from_string("1|2|3")
-  regexp.replace_match(re, "1, 2, 3", replace)
-  |> should.equal("one, two, three")
+  regexp.replace_map(re, "1, 2, 3, 4", replace)
+  |> should.equal("one, two, three, 4")
 }
 
-pub fn replace_match_submatch_test() {
+pub fn replace_map_1_test() {
   let replace = fn(match: Match) {
     case match.submatches {
       [Some("1")] -> "one"
@@ -215,6 +216,18 @@ pub fn replace_match_submatch_test() {
     }
   }
   let assert Ok(re) = regexp.from_string("'(1|2|3)'")
-  regexp.replace_match(re, "'1', '2', '3'", replace)
-  |> should.equal("one, two, three")
+  regexp.replace_map(re, "'1', '2', '3', '4'", replace)
+  |> should.equal("one, two, three, '4'")
+}
+
+pub fn replace_map_2_test() {
+  let assert Ok(re) = regexp.from_string("^[A-Z]|([a-z])([A-Z])")
+  let replace = fn(match: Match) {
+    case match.submatches {
+      [Some(lower), Some(upper)] -> lower <> "_" <> string.lowercase(upper)
+      _ -> string.lowercase(match.content)
+    }
+  }
+  regexp.replace_map(re, "TheQuickBrownFox", replace)
+  |> should.equal("the_quick_brown_fox")
 }

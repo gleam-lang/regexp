@@ -219,9 +219,24 @@ pub fn replace(
   with substitute: String,
 ) -> String
 
-@external(erlang, "gleam_regexp_ffi", "replace_match")
-@external(javascript, "../gleam_regexp_ffi.mjs", "replace_match")
-pub fn replace_match(
+/// Creates a new `String` by replacing all substrings that match the regular
+/// expression.
+///
+/// ## Examples
+///
+/// ```gleam
+/// let assert Ok(re) = regexp.from_string("^[A-Z]|([a-z])([A-Z])")
+///
+/// use match <- regexp.replace_map(re, "TheQuickBrownFox")
+/// case match.submatches {
+///   [Some(lower), Some(upper)] -> lower <> "_" <> string.lowercase(upper)
+///   _ -> string.lowercase(match.content)
+/// }
+/// // -> "the_quick_brown_fox"
+/// ```
+@external(erlang, "gleam_regexp_ffi", "replace_map")
+@external(javascript, "../gleam_regexp_ffi.mjs", "replace_map")
+pub fn replace_map(
   each pattern: Regexp,
   in string: String,
   with substitute: fn(Match) -> String,
