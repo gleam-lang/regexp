@@ -1,6 +1,6 @@
 -module(gleam_regexp_ffi).
 
--export([compile/2, check/2, split/2, replace/3, scan/2]).
+-export([compile/2, check/2, split/2, replace/3, scan/2, replace_match/3]).
 
 compile(String, Options) ->
     {options, Caseless, Multiline} = Options,
@@ -44,3 +44,9 @@ scan(Regexp, String) ->
 replace(Regexp, Subject, Replacement) ->
     re:replace(Subject, Regexp, Replacement, [global, {return, binary}]).
 
+replace_match(Regexp, Subject, Replacement) ->
+    Replacement1 = fun(Content, Submatches) ->
+        Submatches1 = gleam@list:map(Submatches, fun gleam@string:to_option/1),
+        Replacement({match, Content, Submatches1})
+    end,
+    re:replace(Subject, Regexp, Replacement1, [global, {return, binary}]).

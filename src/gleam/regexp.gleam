@@ -218,3 +218,11 @@ pub fn replace(
   in string: String,
   with substitute: String,
 ) -> String
+
+@external(erlang, "gleam_regexp_ffi", "replace_match")
+@external(javascript, "../gleam_regexp_ffi.mjs", "replace_match")
+pub fn replace_match(
+  each pattern: Regexp,
+  in string: String,
+  with substitute: fn(Match) -> String,
+) -> String
