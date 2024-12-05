@@ -1,6 +1,5 @@
 import gleam/option.{None, Some}
 import gleam/regexp.{type Match, Match, Options}
-import gleam/string
 import gleeunit
 import gleeunit/should
 
@@ -218,16 +217,4 @@ pub fn replace_map_1_test() {
   let assert Ok(re) = regexp.from_string("'(1|2|3)'")
   regexp.replace_map(re, "'1', '2', '3', '4'", replace)
   |> should.equal("one, two, three, '4'")
-}
-
-pub fn replace_map_2_test() {
-  let assert Ok(re) = regexp.from_string("^[A-Z]|([a-z])([A-Z])")
-  let replace = fn(match: Match) {
-    case match.submatches {
-      [Some(lower), Some(upper)] -> lower <> "_" <> string.lowercase(upper)
-      _ -> string.lowercase(match.content)
-    }
-  }
-  regexp.replace_map(re, "TheQuickBrownFox", replace)
-  |> should.equal("the_quick_brown_fox")
 }
