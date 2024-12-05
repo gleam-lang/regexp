@@ -49,3 +49,23 @@ export function scan(regex, string) {
 export function replace(regex, original_string, replacement) {
   return original_string.replaceAll(regex, replacement);
 }
+
+export function replace_map(regex, original_string, replacement) {
+  let replace = (match, ...args) => {
+    const hasNamedGroups = typeof args.at(-1) === "object";
+    const groups = args.slice(0, hasNamedGroups ? -3 : -2);
+    const submatches = [];
+    for (let n = 0; n < groups.length; n++) {
+      if (groups[n]) {
+        submatches[n] = new Some(groups[n]);
+        continue;
+      }
+      if (submatches.length > 0) {
+        submatches[n] = new None();
+      }
+    }
+    let regexMatch = new RegexMatch(match, List.fromArray(submatches));
+    return replacement(regexMatch);
+  };
+  return original_string.replaceAll(regex, replace);
+}

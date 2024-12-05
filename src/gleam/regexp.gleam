@@ -218,3 +218,21 @@ pub fn replace(
   in string: String,
   with substitute: String,
 ) -> String
+
+/// Creates a new `String` by replacing all substrings that match the regular
+/// expression with the result of applying the function to each match.
+///
+/// ## Examples
+///
+/// ```gleam
+/// let assert Ok(re) = regexp.from_string("\\w+")
+/// regexp.replace_map(re, "hello, joe!", fn(m) { string.capitalise(m.content) })
+/// // -> "Hello, Joe!"
+/// ```
+@external(erlang, "gleam_regexp_ffi", "replace_map")
+@external(javascript, "../gleam_regexp_ffi.mjs", "replace_map")
+pub fn replace_map(
+  each pattern: Regexp,
+  in string: String,
+  with substitute: fn(Match) -> String,
+) -> String
