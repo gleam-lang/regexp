@@ -191,7 +191,7 @@ pub fn replace_3_test() {
   |> should.equal("🐕🐕 are great!")
 }
 
-pub fn replace_map_0_test() {
+pub fn match_map_0_test() {
   let replace = fn(match: Match) {
     case match.content {
       "1" -> "one"
@@ -201,11 +201,11 @@ pub fn replace_map_0_test() {
     }
   }
   let assert Ok(re) = regexp.from_string("1|2|3")
-  regexp.replace_map(re, "1, 2, 3, 4", replace)
+  regexp.match_map(re, "1, 2, 3, 4", replace)
   |> should.equal("one, two, three, 4")
 }
 
-pub fn replace_map_1_test() {
+pub fn match_map_1_test() {
   let replace = fn(match: Match) {
     case match.submatches {
       [Some("1")] -> "one"
@@ -215,6 +215,6 @@ pub fn replace_map_1_test() {
     }
   }
   let assert Ok(re) = regexp.from_string("'(1|2|3)'")
-  regexp.replace_map(re, "'1', '2', '3', '4'", replace)
+  regexp.match_map(re, "'1', '2', '3', '4'", replace)
   |> should.equal("one, two, three, '4'")
 }

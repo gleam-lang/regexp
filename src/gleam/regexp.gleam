@@ -226,12 +226,12 @@ pub fn replace(
 ///
 /// ```gleam
 /// let assert Ok(re) = regexp.from_string("\\w+")
-/// regexp.replace_map(re, "hello, joe!", fn(m) { string.capitalise(m.content) })
+/// regexp.match_map(re, "hello, joe!", fn(m) { string.capitalise(m.content) })
 /// // -> "Hello, Joe!"
 /// ```
-@external(erlang, "gleam_regexp_ffi", "replace_map")
-@external(javascript, "../gleam_regexp_ffi.mjs", "replace_map")
-pub fn replace_map(
+@external(erlang, "gleam_regexp_ffi", "match_map")
+@external(javascript, "../gleam_regexp_ffi.mjs", "match_map")
+pub fn match_map(
   each pattern: Regexp,
   in string: String,
   with substitute: fn(Match) -> String,

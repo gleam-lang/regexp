@@ -31,17 +31,7 @@ export function split(regex, string) {
 export function scan(regex, string) {
   const matches = Array.from(string.matchAll(regex)).map((match) => {
     const content = match[0];
-    const submatches = [];
-    for (let n = match.length - 1; n > 0; n--) {
-      if (match[n]) {
-        submatches[n - 1] = new Some(match[n]);
-        continue;
-      }
-      if (submatches.length > 0) {
-        submatches[n - 1] = new None();
-      }
-    }
-    return new RegexMatch(content, List.fromArray(submatches));
+    return new RegexMatch(content, submatches(match.slice(1)));
   });
   return List.fromArray(matches);
 }
@@ -50,22 +40,26 @@ export function replace(regex, original_string, replacement) {
   return original_string.replaceAll(regex, replacement);
 }
 
-export function replace_map(regex, original_string, replacement) {
+export function match_map(regex, original_string, replacement) {
   let replace = (match, ...args) => {
     const hasNamedGroups = typeof args.at(-1) === "object";
     const groups = args.slice(0, hasNamedGroups ? -3 : -2);
-    const submatches = [];
-    for (let n = 0; n < groups.length; n++) {
-      if (groups[n]) {
-        submatches[n] = new Some(groups[n]);
-        continue;
-      }
-      if (submatches.length > 0) {
-        submatches[n] = new None();
-      }
-    }
-    let regexMatch = new RegexMatch(match, List.fromArray(submatches));
+    let regexMatch = new RegexMatch(match, submatches(groups));
     return replacement(regexMatch);
   };
   return original_string.replaceAll(regex, replace);
+}
+
+function submatches(groups) {
+  const submatches = [];
+  for (let n = groups.length - 1; n >= 0; n--) {
+    if (groups[n]) {
+      submatches[n] = new Some(groups[n]);
+      continue;
+    }
+    if (submatches.length > 0) {
+      submatches[n] = new None();
+    }
+  }
+  return List.fromArray(submatches);
 }
