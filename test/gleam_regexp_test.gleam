@@ -1,5 +1,5 @@
 import gleam/option.{None, Some}
-import gleam/regexp.{Match, Options}
+import gleam/regexp.{type Match, Match, Options}
 import gleeunit
 import gleeunit/should
 
@@ -189,4 +189,32 @@ pub fn replace_3_test() {
   let assert Ok(re) = regexp.from_string("🐈")
   regexp.replace(re, "🐈🐈 are great!", "🐕")
   |> should.equal("🐕🐕 are great!")
+}
+
+pub fn match_map_0_test() {
+  let replace = fn(match: Match) {
+    case match.content {
+      "1" -> "one"
+      "2" -> "two"
+      "3" -> "three"
+      n -> n
+    }
+  }
+  let assert Ok(re) = regexp.from_string("1|2|3")
+  regexp.match_map(re, "1, 2, 3, 4", replace)
+  |> should.equal("one, two, three, 4")
+}
+
+pub fn match_map_1_test() {
+  let replace = fn(match: Match) {
+    case match.submatches {
+      [Some("1")] -> "one"
+      [Some("2")] -> "two"
+      [Some("3")] -> "three"
+      _ -> match.content
+    }
+  }
+  let assert Ok(re) = regexp.from_string("'(1|2|3)'")
+  regexp.match_map(re, "'1', '2', '3', '4'", replace)
+  |> should.equal("one, two, three, '4'")
 }
