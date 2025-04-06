@@ -29,6 +29,7 @@ export function split(regex, string) {
 }
 
 export function scan(regex, string) {
+  regex.lastIndex = 0;
   const matches = Array.from(string.matchAll(regex)).map((match) => {
     const content = match[0];
     return new RegexMatch(content, submatches(match.slice(1)));
@@ -37,10 +38,12 @@ export function scan(regex, string) {
 }
 
 export function replace(regex, original_string, replacement) {
+  regex.lastIndex = 0;
   return original_string.replaceAll(regex, replacement);
 }
 
 export function match_map(regex, original_string, replacement) {
+  regex.lastIndex = 0;
   let replace = (match, ...args) => {
     const hasNamedGroups = typeof args.at(-1) === "object";
     const groups = args.slice(0, hasNamedGroups ? -3 : -2);

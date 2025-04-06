@@ -218,3 +218,11 @@ pub fn match_map_1_test() {
   regexp.match_map(re, "'1', '2', '3', '4'", replace)
   |> should.equal("one, two, three, '4'")
 }
+
+// https://github.com/gleam-lang/regexp/issues/4
+pub fn last_index_bug_test() {
+  let assert Ok(re) = regexp.from_string("(b)")
+  let assert [Match("b", [Some("b")])] = regexp.scan(re, "b")
+  let assert True = regexp.check(re, "b")
+  let assert [Match("b", [Some("b")])] = regexp.scan(re, "b")
+}
